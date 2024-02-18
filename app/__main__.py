@@ -1,8 +1,9 @@
 import random
+from time import sleep
 
 from .monster import FireMonster, WaterMonster
-from .monster import Attack, Defend, Rampage, Poison, DrainEnergy
-from .monster import OutOfEnergyException
+from .monster.move import Attack, Defend, Rampage, Poison, DrainEnergy
+from .monster.exceptions import OutOfEnergyException
 
 attack = Attack()
 rampage = Rampage()
@@ -41,22 +42,29 @@ def ai_go(m2, m1):
             break
         except OutOfEnergyException:
             pass
+    sleep(1)
 
+def print_monsters(m1, m2):
+    print(f"Your monster: {m1.name}\nHealth: {round(m1.health, 2)}\nEnergy: {m1.energy}\nState: {m1.state}\n")
+    print(f"Their monster: {m2.name}\nHealth: {round(m2.health, 2)}\nEnergy: {m2.energy}\nState: {m2.state}\n")
 
 def game_loop():
+    print_monsters(m1, m2)
     while True:
         print("TURN START!\n")
-        print(f"Your monster: {m1.name}\nHealth: {round(m1.health, 2)}\nEnergy: {m1.energy}\nState: {m1.state}\n")
-        print(f"Their monster: {m2.name}\nHealth: {round(m2.health, 2)}\nEnergy: {m2.energy}\nState: {m2.state}\n")
 
         who_goes = random.choice((m1, m2))
 
         if who_goes is m1:
             player_go(m1, m2)
+            print_monsters(m1, m2)
             ai_go(m2, m1)
+            print_monsters(m1, m2)
         else:
             ai_go(m2, m1)
+            print_monsters(m1, m2)
             player_go(m1, m2)
+            print_monsters(m1, m2)
 
         if m1.health <= 0:
             print("PLAYER 2 WINS!!!")
