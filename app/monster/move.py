@@ -60,7 +60,7 @@ class Defend(Move):
 
 class Rampage(Move):
 
-    energy = 1
+    energy = 2
     damage = 2.0
 
     def _call(self, origin, target):

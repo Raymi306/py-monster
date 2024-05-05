@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from enum import Enum, auto
-from typing import Sequence, Optional
+from typing import Optional
 
 from app.monster.type import MonsterType
 from app.monster.state import MonsterState
@@ -19,7 +19,7 @@ class Monster(ABC):
             self,
             health: float,
             energy: int,
-            moves: Sequence[Move],
+            moves: List[Move],
             nickname: Optional[str] = None,
         ):
         self.nickname = nickname

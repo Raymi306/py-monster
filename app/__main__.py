@@ -1,78 +1,53 @@
-import random
-from time import sleep
-
-from .monster import FireMonster, WaterMonster
+from .monster import FireMonster, WaterMonster, GrassMonster
 from .monster.move import Attack, Defend, Rampage, Poison, DrainEnergy
-from .monster.exceptions import OutOfEnergyException
-
-attack = Attack()
-rampage = Rampage()
-defend = Defend()
-poison = Poison()
-drain_energy = DrainEnergy()
-
-m1 = FireMonster(5, 5, [attack, rampage, poison])
-m2 = WaterMonster(5, 5, [attack, defend, drain_energy])
-
-
-def player_go(m1, m2):
-    m1.list_moves()
-    while True:
-        try:
-            choice = int(input("Select your move! \n"))
-            if choice > len(m1.moves):
-                raise RuntimeError
-        except (RuntimeError, TypeError):
-            print("Choose a valid number!\n")
-        else:
-            print()
-            try:
-                m1.perform_move(choice, m2)
-                break
-            except OutOfEnergyException:
-                print("Out of energy!  Choose a different move\n")
-
-
-def ai_go(m2, m1):
-    while True:
-        choice = random.randint(1, len(m2.moves))
-        try:
-            m2.perform_move(choice, m1)
-            print(f"{m2.name} uses {m2.moves[choice - 1].name}!\n")
-            break
-        except OutOfEnergyException:
-            pass
-    sleep(1)
-
-def print_monsters(m1, m2):
-    print(f"Your monster: {m1.name}\nHealth: {round(m1.health, 2)}\nEnergy: {m1.energy}\nState: {m1.state}\n")
-    print(f"Their monster: {m2.name}\nHealth: {round(m2.health, 2)}\nEnergy: {m2.energy}\nState: {m2.state}\n")
-
-def game_loop():
-    print_monsters(m1, m2)
-    while True:
-        print("TURN START!\n")
-
-        who_goes = random.choice((m1, m2))
-
-        if who_goes is m1:
-            player_go(m1, m2)
-            print_monsters(m1, m2)
-            ai_go(m2, m1)
-            print_monsters(m1, m2)
-        else:
-            ai_go(m2, m1)
-            print_monsters(m1, m2)
-            player_go(m1, m2)
-            print_monsters(m1, m2)
-
-        if m1.health <= 0:
-            print("PLAYER 2 WINS!!!")
-            break
-        if m2.health <= 0:
-            print("PLAYER 1 WINS!!!")
-            break
+from .game_manager import FightManager
 
 
 if __name__ == "__main__":
-    game_loop()
+    attack = Attack()
+    rampage = Rampage()
+    defend = Defend()
+    poison = Poison()
+    drain_energy = DrainEnergy()
+
+    num_players = input("How many players? 1/2: ")
+    ai_p2 = False
+
+    if num_players == "1":
+        ai_p2 = True
+
+
+    nick = input("Player 1: Choose your monster's name: ")
+
+    monster_1 = GrassMonster(
+        health=5,
+        energy=5,
+        moves=[
+            attack,
+            rampage,
+            defend,
+            poison,
+            drain_energy,
+        ],
+        nickname=nick
+    )
+
+    nick = "Computer"
+    if not ai_p2:
+        nick = input("Player 2: Choose your monster's name: ")
+
+    monster_2 = GrassMonster(
+        health=5,
+        energy=5,
+        moves=[
+            attack,
+            rampage,
+            defend,
+            poison,
+            drain_energy,
+        ],
+        nickname=nick
+    )
+
+    fight_manager = FightManager(monster_1, monster_2, ai_p2)
+    fight_manager.loop()
